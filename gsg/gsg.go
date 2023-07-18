@@ -12,7 +12,7 @@ type Engine struct {
 	router *router
 }
 
-// implement the interface of ServeHTTP
+// ServeHTTP implement the interface of http.Handler
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := newContext(w, r)
 	engine.router.handle(c)
