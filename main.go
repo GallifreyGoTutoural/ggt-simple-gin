@@ -1,21 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"github.com/GallifreyGoTutoural/ggt-simple-gin/gsg"
 	"net/http"
 )
 
 func main() {
-	route := gsg.New()
-	route.GET("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
+	r := gsg.New()
+
+	r.GET("/", func(c *gsg.Context) {
+		c.HTML(http.StatusOK, "<h1>Hello GSG</h1>")
 	})
-	route.GET("/hello", func(w http.ResponseWriter, r *http.Request) {
-		for k, v := range r.Header {
-			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-		}
+
+	r.GET("/hello", func(c *gsg.Context) {
+		// expect /hello?name=gallifrey
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 	})
-	route.Run(":8088")
+
+	r.POST("/login", func(c *gsg.Context) {
+		c.JSON(http.StatusOK, gsg.H{
+			"username": c.PostForm("username"),
+			"password": c.PostForm("password"),
+		})
+	})
+
+	r.Run(":8088")
 
 }

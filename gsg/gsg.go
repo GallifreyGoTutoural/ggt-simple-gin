@@ -1,38 +1,31 @@
 package gsg
 
 import (
-	"fmt"
 	"net/http"
 )
 
 // HandleFunc defines the request handler used by gsg
-type HandleFunc func(w http.ResponseWriter, r *http.Request)
+type HandleFunc func(c *Context)
 
 // Engine implement the interface of ServeHTTP
 type Engine struct {
-	router map[string]HandleFunc
+	router *router
 }
 
 // implement the interface of ServeHTTP
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	key := r.Method + "-" + r.URL.Path
-	if handle, ok := engine.router[key]; ok {
-		handle(w, r)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", r.URL)
-	}
+	c := newContext(w, r)
+	engine.router.handle(c)
 }
 
 // New is the constructor of gsg.Engine
 func New() *Engine {
-	return &Engine{router: make(map[string]HandleFunc)}
+	return &Engine{router: newRouter()}
 }
 
 // add router
 func (engine *Engine) addRouter(method string, relativePath string, handle HandleFunc) {
-	key := method + "-" + relativePath
-	engine.router[key] = handle
+	engine.router.addRoute(method, relativePath, handle)
 }
 
 // GET defines the method to add GET request
