@@ -11,10 +11,10 @@ The project is primarily inspired by the blog posts of [GeekTutu](https://geektu
 
 - [x] Construct the `Engine` structure to implement the `ServeHTTP` interface of the http package and add its constructor.
 - [x] Encapsulate functions in `Engine` for handling GET and POST requests and implement basic networking functionality.
-- [ ] Extract the `router` to facilitate further feature development.
-- [ ] Design `Context` to encapsulate Request and Response and provide support for various response types like JSON and HTML.
-- [ ] Implement dynamic route parsing using a Trie tree.
-- [ ] Add support for two types of route matching: `:name` and `*filepath`.
+- [x] Extract the `router` to facilitate further feature development.
+- [x] Design `Context` to encapsulate Request and Response and provide support for various response types like JSON and HTML.
+- [x] Implement dynamic route parsing using a Trie tree.
+- [x] Add support for two types of route matching: `:name` and `*filepath`.
 - [ ] Implement route grouping control.
 - [ ] Design and implement a middleware mechanism for the web framework.
 - [ ] Implement a universal `Logger` middleware that records the time taken from the request to the response.

@@ -11,10 +11,10 @@ ggt-simple-gin是一个模仿gin手写的Web框架项目，旨在更深入地了
 
 - [x] 构造`Engine`结构体实现http包的`ServeHTTP`接口，添加其构造器
 - [x] `Engine`封装GET和POST请求的函数，实现基本的网络请求和响应功能
-- [ ] 抽离出`router`，方便后续功能开发
-- [ ] 设计`Context`，封装Request和Response ，提供对 JSON、HTML 等返回类型的支持
-- [ ] 使用Trie树实现动态路由解析
-- [ ] 添加两种模式匹配支持`:name`和`*filepath`
+- [x] 抽离出`router`，方便后续功能开发
+- [x] 设计`Context`，封装Request和Response ，提供对 JSON、HTML 等返回类型的支持
+- [x] 使用Trie树实现动态路由解析
+- [x] 添加两种模式匹配支持`:name`和`*filepath`
 - [ ] 实现路由分组控制
 - [ ] 设计并实现Web框架的中间件机制
 - [ ] 实现通用的`Logger`中间件，实现`Logger`能够记录请求到响应所花费的时间的功能
