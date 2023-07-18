@@ -1,7 +1,6 @@
 package gsg
 
 import (
-	"net/http"
 	"strings"
 )
 
@@ -23,15 +22,20 @@ func newRouter() *router {
 	}
 }
 
+// getRoute returns the matching node and its parameters
 func (r *router) handle(c *Context) {
-	key := c.Method + "-" + c.Path
-	if handler, ok := r.handlers[key]; ok {
-		handler(c)
+	n, params := r.getRoute(c.Method, c.Path)
+	if n != nil {
+		c.Params = params
+		key := c.Method + "-" + n.fullPath
+		// execute the handler
+		r.handlers[key](c)
 	} else {
-		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+		c.String(404, "404 NOT FOUND: %s\n", c.Path)
 	}
 }
 
+// parseFullPath parses a full path to a string slice -- paths
 func parseFullPath(fullPath string) []string {
 	vs := strings.Split(fullPath, "/")
 	paths := make([]string, 0)
