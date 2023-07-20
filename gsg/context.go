@@ -97,6 +97,13 @@ func (c *Context) Param(key string) string {
 	return value
 }
 
+// Fail sets the status code and error message for response
+func (c *Context) Fail(code int, err string) {
+	c.index = len(c.handlers)
+	c.JSON(code, H{"message": err})
+}
+
+// Next is used to execute the next middleware
 func (c *Context) Next() {
 	c.index++
 	s := len(c.handlers)
