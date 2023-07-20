@@ -2,6 +2,7 @@ package gsg
 
 import (
 	"net/http"
+	"strings"
 )
 
 // HandleFunc defines the request handler used by gsg
@@ -20,12 +21,6 @@ type RouterGroup struct {
 	middlewares []HandleFunc // support middleware
 	parent      *RouterGroup // support nesting
 	engine      *Engine      // all groups share an Engine instance
-}
-
-// ServeHTTP implement the interface of http.Handler
-func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := newContext(w, r)
-	engine.router.handle(c)
 }
 
 // New is the constructor of gsg.Engine
@@ -69,4 +64,21 @@ func (group *RouterGroup) POST(relativePath string, handle HandleFunc) {
 // Run defines the method to start a http server
 func (engine *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, engine)
+}
+
+func (group *RouterGroup) Use(middlewares ...HandleFunc) {
+	group.middlewares = append(group.middlewares, middlewares...)
+}
+
+// ServeHTTP implement the interface of http.Handler
+func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var middlewares []HandleFunc
+	for _, group := range engine.groups {
+		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.middlewares...)
+		}
+	}
+	c := newContext(w, r)
+	c.handlers = middlewares
+	engine.router.handle(c)
 }
