@@ -15,9 +15,9 @@ The project is primarily inspired by the blog posts of [GeekTutu](https://geektu
 - [x] Design `Context` to encapsulate Request and Response and provide support for various response types like JSON and HTML.
 - [x] Implement dynamic route parsing using a Trie tree.
 - [x] Add support for two types of route matching: `:name` and `*filepath`.
-- [ ] Implement route grouping control.
-- [ ] Design and implement a middleware mechanism for the web framework.
-- [ ] Implement a universal `Logger` middleware that records the time taken from the request to the response.
+- [x] Implement route grouping control.
+- [x] Design and implement a middleware mechanism for the web framework.
+- [x] Implement a universal `Logger` middleware that records the time taken from the request to the response.
 - [ ] Implement static resource serving.
 - [ ] Support HTML template rendering.
 - [ ] Implement error handling mechanism.
