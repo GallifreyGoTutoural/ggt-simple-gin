@@ -20,6 +20,9 @@ type Context struct {
 	Params map[string]string
 	// response info
 	StatusCode int
+	// middleware
+	handlers []HandleFunc
+	index    int
 }
 
 // newContext is the constructor of Context
@@ -29,6 +32,7 @@ func newContext(w http.ResponseWriter, r *http.Request) *Context {
 		Req:    r,
 		Path:   r.URL.Path,
 		Method: r.Method,
+		index:  -1,
 	}
 }
 
@@ -91,4 +95,13 @@ func (c *Context) Param(key string) string {
 		return ""
 	}
 	return value
+}
+
+func (c *Context) Next() {
+	c.index++
+	s := len(c.handlers)
+	for ; c.index < s; c.index++ {
+		c.handlers[c.index](c)
+	}
+
 }
