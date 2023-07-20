@@ -9,7 +9,17 @@ type HandleFunc func(c *Context)
 
 // Engine implement the interface of ServeHTTP
 type Engine struct {
+	*RouterGroup
 	router *router
+	groups []*RouterGroup // store all groups
+}
+
+// RouterGroup is a group of router
+type RouterGroup struct {
+	prefix      string       // the prefix of the group
+	middlewares []HandleFunc // support middleware
+	parent      *RouterGroup // support nesting
+	engine      *Engine      // all groups share an Engine instance
 }
 
 // ServeHTTP implement the interface of http.Handler
@@ -20,22 +30,40 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // New is the constructor of gsg.Engine
 func New() *Engine {
-	return &Engine{router: newRouter()}
+	engin := &Engine{router: newRouter()}
+	engin.RouterGroup = &RouterGroup{engine: engin}
+	engin.groups = []*RouterGroup{engin.RouterGroup}
+	return engin
 }
 
-// add router
-func (engine *Engine) addRouter(method string, relativePath string, handle HandleFunc) {
-	engine.router.addRoute(method, relativePath, handle)
+// Group is defined to create a new RouterGroup
+// remember all groups share the same Engine instance
+func (group *RouterGroup) Group(prefix string) *RouterGroup {
+	engine := group.engine
+	newGroup := &RouterGroup{
+		prefix: group.prefix + prefix,
+		parent: group,
+		engine: engine,
+	}
+	engine.groups = append(engine.groups, newGroup)
+	return newGroup
+}
+
+// group add router
+func (group *RouterGroup) addRouter(method string, comp string, handle HandleFunc) {
+	path := group.prefix + comp
+	group.engine.router.addRoute(method, path, handle)
 }
 
 // GET defines the method to add GET request
-func (engine *Engine) GET(relativePath string, handle HandleFunc) {
-	engine.addRouter("GET", relativePath, handle)
+func (group *RouterGroup) GET(relativePath string, handle HandleFunc) {
+	group.addRouter("GET", relativePath, handle)
 }
 
 // POST defines the method to add POST request
-func (engine *Engine) POST(relativePath string, handle HandleFunc) {
-	engine.addRouter("POST", relativePath, handle)
+func (group *RouterGroup) POST(relativePath string, handle HandleFunc) {
+	group.addRouter("POST", relativePath, handle)
+
 }
 
 // Run defines the method to start a http server
