@@ -2,6 +2,7 @@ package gsg
 
 import (
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -46,8 +47,8 @@ func (group *RouterGroup) Group(prefix string) *RouterGroup {
 
 // group add router
 func (group *RouterGroup) addRouter(method string, comp string, handle HandleFunc) {
-	path := group.prefix + comp
-	group.engine.router.addRoute(method, path, handle)
+	fullPath := group.prefix + comp
+	group.engine.router.addRoute(method, fullPath, handle)
 }
 
 // GET defines the method to add GET request
@@ -81,4 +82,27 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := newContext(w, r)
 	c.handlers = middlewares
 	engine.router.handle(c)
+}
+
+// create static handler
+func (group *RouterGroup) createStaticHandler(relativePath string, fs http.FileSystem) HandleFunc {
+	prefixPath := path.Join(group.prefix, relativePath)
+	fileServer := http.StripPrefix(prefixPath, http.FileServer(fs))
+	return func(c *Context) {
+		file := c.Param("filepath")
+		// check if file exists and/or if we have permission to access it
+		if _, err := fs.Open(file); err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		fileServer.ServeHTTP(c.Writer, c.Req)
+
+	}
+}
+
+// Static serve static files
+func (group *RouterGroup) Static(relativePath string, root string) {
+	handler := group.createStaticHandler(relativePath, http.Dir(root))
+	urlPattern := path.Join(relativePath, "/*filepath")
+	group.GET(urlPattern, handler)
 }
