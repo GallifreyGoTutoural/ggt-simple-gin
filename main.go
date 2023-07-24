@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/GallifreyGoTutoural/ggt-simple-gin/gsg"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -13,6 +15,16 @@ func onlyForV2() gsg.HandleFunc {
 		c.Fail(500, "Internal Server Error")
 		log.Printf("[%d] %s in %v for group v2", c.StatusCode, c.Req.RequestURI, time.Since(t))
 	}
+}
+
+type student struct {
+	Name string
+	Age  int8
+}
+
+func FormatAsDate(t time.Time) string {
+	year, month, day := t.Date()
+	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
 }
 
 func main() {
@@ -50,12 +62,28 @@ func main() {
 		})
 	}
 
-	r.LoadHTMLGlob("templates/*")
 	r.Static("/assets", "./static") // localhost:8080/assets/xxx.png => ./static/xxx.png
+	r.SetFuncMap(template.FuncMap{
+		"FormatAsDate": FormatAsDate,
+	})
+	r.LoadHTMLGlob("templates/*")
+
 	v3 := r.Group("/v3")
 	{
 		v3.GET("/lovelyPng", func(c *gsg.Context) {
 			c.HTML(http.StatusOK, "css.tmpl", nil)
+		})
+		v3.GET("/students", func(c *gsg.Context) {
+			c.HTML(http.StatusOK, "arr.tmpl", gsg.H{
+				"title":  "gsg",
+				"stuArr": [2]*student{{Name: "gallifrey", Age: 20}, {Name: "Ace", Age: 12}},
+			})
+		})
+		v3.GET("/date", func(c *gsg.Context) {
+			c.HTML(http.StatusOK, "func.tmpl", gsg.H{
+				"title": "gsg",
+				"now":   time.Now(),
+			})
 		})
 
 	}
