@@ -19,15 +19,9 @@ func main() {
 	r := gsg.New()
 	r.Use(gsg.Logger()) // global middleware
 
-	r.GET("/index", func(c *gsg.Context) {
-		c.HTML(http.StatusOK, "<h1>Index Page</h1>")
-	})
-
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/", func(c *gsg.Context) {
-			c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
-		})
+
 		hello := v1.Group("/hello")
 		{
 			hello.GET("/:name", func(c *gsg.Context) {
@@ -54,6 +48,16 @@ func main() {
 				"password": c.PostForm("password"),
 			})
 		})
+	}
+
+	r.LoadHTMLGlob("templates/*")
+	r.Static("/assets", "./static") // localhost:8080/assets/xxx.png => ./static/xxx.png
+	v3 := r.Group("/v3")
+	{
+		v3.GET("/lovelyPng", func(c *gsg.Context) {
+			c.HTML(http.StatusOK, "css.tmpl", nil)
+		})
+
 	}
 
 	r.Run(":8088")
