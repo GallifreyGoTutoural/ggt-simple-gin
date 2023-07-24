@@ -18,6 +18,6 @@ The project is primarily inspired by the blog posts of [GeekTutu](https://geektu
 - [x] Implement route grouping control.
 - [x] Design and implement a middleware mechanism for the web framework.
 - [x] Implement a universal `Logger` middleware that records the time taken from the request to the response.
-- [ ] Implement static resource serving.
-- [ ] Support HTML template rendering.
+- [x] Implement static resource serving.
+- [x] Support HTML template rendering.
 - [ ] Implement error handling mechanism.
