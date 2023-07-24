@@ -20,4 +20,4 @@ The project is primarily inspired by the blog posts of [GeekTutu](https://geektu
 - [x] Implement a universal `Logger` middleware that records the time taken from the request to the response.
 - [x] Implement static resource serving.
 - [x] Support HTML template rendering.
-- [ ] Implement error handling mechanism.
+- [x] Implement error handling mechanism.
