@@ -87,6 +87,16 @@ func main() {
 		})
 
 	}
+	v4 := r.Group("/v4")
+	v4.Use(gsg.Recovery(), gsg.Logger())
+
+	{
+		v4.GET("/panic", func(c *gsg.Context) {
+			names := []string{"gallifrey"}
+			c.String(http.StatusOK, names[100])
+		})
+
+	}
 
 	r.Run(":8088")
 
